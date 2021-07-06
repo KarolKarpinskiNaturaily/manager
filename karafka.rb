@@ -4,29 +4,15 @@
 # If by any chance you've wanted a setup for Rails app, either run the `karafka:install`
 # command again or refer to the install templates available in the source codes
 
-ENV['RACK_ENV'] ||= 'development'
-ENV['KARAFKA_ENV'] ||= ENV['RACK_ENV']
-Bundler.require(:default, ENV['KARAFKA_ENV'])
-
-# Zeitwerk custom loader for loading the app components before the whole
-# Karafka framework configuration
-APP_LOADER = Zeitwerk::Loader.new
-APP_LOADER.enable_reloading
-
-%w[
-  lib
-  app/consumers
-  app/responders
-  app/workers
-].each(&APP_LOADER.method(:push_dir))
-
-APP_LOADER.setup
-APP_LOADER.eager_load
+ENV["RAILS_ENV"] ||= "development"
+ENV["KARAFKA_ENV"] = ENV["RAILS_ENV"]
+require ::File.expand_path("../config/environment", __FILE__)
+Rails.application.eager_load!
 
 class KarafkaApp < Karafka::App
   setup do |config|
-    config.kafka.seed_brokers = %w[kafka://127.0.0.1:9092]
-    config.client_id = 'example_app'
+    config.kafka.seed_brokers = %w(kafka://kafka:9092)
+    config.client_id = 'manager'
   end
 
   # Comment out this part if you are not using instrumentation and/or you are not
@@ -42,15 +28,15 @@ class KarafkaApp < Karafka::App
   # for more details on benefits and downsides of the code reload in the
   # development mode
 
-  Karafka.monitor.subscribe(
-    Karafka::CodeReloader.new(
-      APP_LOADER
-    )
-  )
+  # Karafka.monitor.subscribe(
+  #   Karafka::CodeReloader.new(
+  #     APP_LOADER
+  #   )
+  # )
 
   consumer_groups.draw do
-    topic :created_payment_request do
-      consumer Created_payment_requestConsumer
+    topic :payment_request_created do
+      consumer CreatedPaymentRequestConsumer
     end
 
     # consumer_group :bigger_group do

@@ -10,7 +10,8 @@ class PaymentRequestsController < ApplicationController
   end
 
   def update
-    payment_request = PaymentRequest.update!(payment_request_params)
+    payment_request = PaymentRequest.find(params[:id])
+    payment_request.update!(payment_request_params)
     emit_updated_payment_request_event(payment_request)
     redirect_to root_path, notice: "Payment request has been updated"
     rescue ActiveRecord::ActiveRecordError => e
@@ -22,15 +23,15 @@ class PaymentRequestsController < ApplicationController
   private
 
   def payment_request_params
-    params.require(:payment_request).permit(:status)
+    params.permit(:status)
   end
 
   def emit_updated_payment_request_event(payment_request)
     WaterDrop::SyncProducer.call(
       {
-        id: payment_request.id,
-        status: payment_request.status
-      },
+        "id" => payment_request.id,
+        "status" => payment_request.status
+      }.to_json,
       topic: "payment_request_updated")
   end
 end
