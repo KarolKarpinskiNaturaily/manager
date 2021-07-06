@@ -27,7 +27,7 @@ class PaymentRequestsController < ApplicationController
   end
 
   def emit_updated_payment_request_event(payment_request)
-    WaterDrop::SyncProducer.call(
+    WaterDrop::AsyncProducer.call(
       {
         "id" => payment_request.id,
         "status" => payment_request.status
