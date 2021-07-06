@@ -2,7 +2,7 @@
 
 class PaymentRequestsController < ApplicationController
   def index
-    @payment_requests = PaymentRequest.all
+    @payment_requests = PaymentRequest.all.order(:id)
   end
 
   def update
