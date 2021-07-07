@@ -14,8 +14,8 @@
       <td><%= payment_request.currency %></td>
       <td><%= payment_request.status %></td>
       <% if payment_request.status == "pending" %>
-        <td><%= link_to "Accept", payment_request_path(payment_request, status: "accepted"), :method=> :put %></td>
-        <td><%= link_to "Decline", payment_request_path(payment_request, status: "rejected"), :method=> :put %></td>
+        <td><%= link_to "Accept", payment_request_path(payment_request, payment_request: { status: "accepted" }), method: :put %></td>
+        <td><%= link_to "Decline", payment_request_path(payment_request, payment_request: { status: "rejected" }), method: :put %></td>
       <% end %>
     </tr>
   <% end %>

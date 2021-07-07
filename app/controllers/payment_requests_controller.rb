@@ -21,6 +21,6 @@ class PaymentRequestsController < ApplicationController
   end
 
   def update_payment_request_params
-    params.permit(:status)
+    params.require(:payment_request).permit(:status)
   end
 end
